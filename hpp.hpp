@@ -11,14 +11,20 @@ struct Sym {
 	string tag,val;
 	Sym(string,string); Sym(string);
 	vector<Sym*> nest; void push(Sym*);
+	map<string,Sym*> pars; void par(Sym*);
 	virtual string dump(int=0);
 	virtual string tagval(); string tagstr(); string pad(int);
 	virtual Sym* eval();
+	virtual Sym* eq(Sym*);
 };
+
+struct Str: Sym { Str(string); string tagval(); };
 
 struct List: Sym { List(); };
 
-struct Op: Sym { Op(string); };
+struct Op: Sym { Op(string); Sym*eval(); };
+
+struct Lambda: Sym { Lambda(); };
 
 extern map<string,Sym*> env;
 extern void env_init();
