@@ -6,4 +6,9 @@
 %%
 #[^\n]*				{}
 [a-zA-Z0-9_.]+		TOC(Sym,SYM)
+
+\[					TOC(Op,L)
+\]					TOC(Op,R)
+
+[ \t\r\n]+			{}
 %%

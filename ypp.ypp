@@ -3,6 +3,11 @@
 %}
 %defines %union { Sym*o; }
 %token <o> SYM
+%token <o> L R
+%type <o> ex scalar list
 %%
-REPL : | REPL SYM { cout << $2->dump(); };
+REPL : | REPL ex { cout << $2->eval()->dump(); } ;
+ex : scalar | L list R { $$=$2; } ;
+scalar : SYM ;
+list : { $$=new List(); } | list ex { $$=$1; $$->push($2); } ;
 %%
