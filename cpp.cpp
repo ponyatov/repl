@@ -9,10 +9,10 @@ Sym::Sym(string V):Sym("",V) {}
 void Sym::push(Sym*o) { nest.push_back(o); }
 void Sym::par(Sym*o) { pars[o->val]=o; }
 
-string Sym::tagval() { ostringstream os; os<<"<"<<tag<<":"<<val<<":"<<this<<">";
-	return os.str(); }
-string Sym::tagstr() { ostringstream os; os<<"<"<<tag<<":'"<<val<<"':"<<this<<">";
-	return os.str(); }
+string Sym::tagval() { return "<"+tag+":"+val+">"; }
+//	ostringstream os; os<<"<"<<tag<<":"<<val<<":"<<this<<">"; return os.str(); }
+string Sym::tagstr() { return "<"+tag+":'"+val+"'>"; }
+//	ostringstream os; os<<"<"<<tag<<":'"<<val<<"':"<<this<<">"; return os.str(); }
 string Sym::pad(int n) { string S; for (int i=0;i<n;i++) S+='\t'; return S; }
 string Sym::dump(int depth) { string S = "\n"+pad(depth)+tagval();
 	for (auto pr=pars.begin(),e=pars.end();pr!=e;pr++)
@@ -36,14 +36,14 @@ Str::Str(string V):Sym("str",V) {}
 string Str::tagval() { return tagstr(); }
 
 Int::Int(string V):Sym("int","") { val = atol(V.c_str()); }
-string Int::tagval() { ostringstream os; os<<"<"<<tag<<":"<<val<<":"<<this<<">";
-	return os.str(); }
+string Int::tagval() { ostringstream os;
+	os<<"<"<<tag<<":"<<val/*<<":"<<this*/<<">"; return os.str(); }
 Sym* Int::pfxadd() { val = +val; return this; }
 Sym* Int::pfxsub() { val = -val; return this; }
 
 Num::Num(string V):Sym("num","") { val = atof(V.c_str()); }
-string Num::tagval() { ostringstream os; os<<"<"<<tag<<":"<<val<<":"<<this<<">";
-	return os.str(); }
+string Num::tagval() { ostringstream os;
+	os<<"<"<<tag<<":"<<val/*<<":"<<this*/<<">"; return os.str(); }
 Sym* Num::pfxadd() { val = +val; return this; }
 Sym* Num::pfxsub() { val = -val; return this; }
 
