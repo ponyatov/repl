@@ -2,6 +2,7 @@
 #define _H_REPL
 
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <vector>
 #include <map>
@@ -17,10 +18,20 @@ struct Sym {
 	virtual Sym* eval();
 	virtual Sym* eq(Sym*);
 	virtual Sym* at(Sym*);
+	virtual Sym* pfxadd();
+	virtual Sym* pfxsub();
+	Sym* copy();
 	Sym* replace(string,Sym*);
 };
 
 struct Str: Sym { Str(string); string tagval(); };
+
+struct Int: Sym { Int(string); long val; string tagval();
+	Sym*pfxadd(); Sym*pfxsub(); };
+struct Num: Sym { Num(string); double val; string tagval();
+	Sym*pfxadd(); Sym*pfxsub(); };
+struct Hex: Sym { Hex(string); };
+struct Bin: Sym { Bin(string); };
 
 struct List: Sym { List(); };
 

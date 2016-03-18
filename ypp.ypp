@@ -3,19 +3,38 @@
 %}
 %defines %union { Sym*o; }
 %token <o> SYM STR NUM
-%token <o> LQ RQ LC RC
-%token <o> EQ AT COLON
+%token <o> LP RP LQ RQ LC RC
+%token <o> EQ AT COLON TILD
 %token <o> ADD SUB MUL DIV POW
-%type <o> ex scalar list lambda
+%type <o> ex scalar bracket op list lambda
+
+%left EQ
+%left AT
+%left ADD SUB
+%left MUL DIV
+%left POW
+%left TILD
+%left PFX
 %%
 REPL : | REPL ex		{ cout << $2->eval()->dump(); } ;
 ex : scalar
+	| LP ex RP			{ $$=$2; }
 	| LQ list RQ		{ $$=$2; }
 	| LC lambda RC		{ $$=$2; }
+	| TILD ex			{ $$=$1; $$->push($2); }
+	| TILD op			{ $$=$1; $$->push($2); }
+	| ADD ex %prec PFX	{ $$=$2->pfxadd(); }
+	| SUB ex %prec PFX	{ $$=$2->pfxsub(); }
 	| ex EQ ex			{ $$=$2; $$->push($1); $$->push($3); }  
 	| ex AT ex			{ $$=$2; $$->push($1); $$->push($3); }  
 	| ex ADD ex			{ $$=$2; $$->push($1); $$->push($3); }  
+	| ex SUB ex			{ $$=$2; $$->push($1); $$->push($3); }  
+	| ex MUL ex			{ $$=$2; $$->push($1); $$->push($3); }  
+	| ex DIV ex			{ $$=$2; $$->push($1); $$->push($3); }  
+	| ex POW ex			{ $$=$2; $$->push($1); $$->push($3); }  
 ;
+bracket : LQ | RQ | LC | RC ;
+op : bracket | EQ | AT | COLON | TILD | ADD | SUB | MUL | DIV | POW ;
 scalar : SYM | STR | NUM ;
 list :					{ $$=new List(); }
 	| list ex			{ $$=$1; $$->push($2); }
