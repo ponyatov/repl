@@ -16,6 +16,8 @@ struct Sym {
 	virtual string tagval(); string tagstr(); string pad(int);
 	virtual Sym* eval();
 	virtual Sym* eq(Sym*);
+	virtual Sym* at(Sym*);
+	Sym* replace(string,Sym*);
 };
 
 struct Str: Sym { Str(string); string tagval(); };
@@ -24,7 +26,7 @@ struct List: Sym { List(); };
 
 struct Op: Sym { Op(string); Sym*eval(); };
 
-struct Lambda: Sym { Lambda(); };
+struct Lambda: Sym { Lambda(); Sym*at(Sym*); };
 
 extern map<string,Sym*> env;
 extern void env_init();

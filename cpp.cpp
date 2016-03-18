@@ -14,7 +14,7 @@ string Sym::tagstr() { return "<"+tag+":'"+val+"'>"; }
 string Sym::pad(int n) { string S; for (int i=0;i<n;i++) S+='\t'; return S; }
 string Sym::dump(int depth) { string S = "\n"+pad(depth)+tagval();
 	for (auto pr=pars.begin(),e=pars.end();pr!=e;pr++)
-		S += "," + pr->first;
+		S += "\n" + pad(depth+1) + pr->first + pr->second->dump(depth+2);
 	for (auto it=nest.begin(),e=nest.end();it!=e;it++)
 		S += (*it)->dump(depth+1);
 	return S; }
@@ -26,6 +26,7 @@ Sym* Sym::eval() {
 	return this; }
 
 Sym* Sym::eq(Sym*o) { env[val]=o; return o; }
+Sym* Sym::at(Sym*o) { push(o); return this; }
 
 Str::Str(string V):Sym("str",V) {}
 string Str::tagval() { return tagstr(); }
@@ -36,10 +37,26 @@ Op::Op(string V):Sym("op",V) {}
 
 Sym* Op::eval() { Sym::eval();
 	if (val=="=") return nest[0]->eq(nest[1]);
+	if (val=="@") return nest[0]->at(nest[1]);
 	return this;
 }
 
 Lambda::Lambda():Sym("^","^") {}
+
+Sym* Sym::replace(string S,Sym*o) {
+	if (val==S) return o;
+	for (auto pr=pars.begin(),e=pars.end();pr!=e;pr++)
+		if (pr->first==S) pr->second=o;
+	for (auto it=nest.begin(),e=nest.end();it!=e;it++)
+		(*it)=(*it)->replace(S,o);
+	return this;
+}
+
+Sym* Lambda::at(Sym*o) {
+	for (auto pr=pars.begin(),e=pars.end();pr!=e;pr++)
+		replace(pr->first,o);
+	return this;
+}
 
 map<string,Sym*> env;
 void env_init(){}

@@ -4,4 +4,4 @@ log.log
 .gitignore
 
 p = { P: P+'.pp' }
-p@y
+p@y p
