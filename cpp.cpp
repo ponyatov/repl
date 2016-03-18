@@ -57,8 +57,7 @@ Op::Op(string V):Sym("op",V) {}
 Sym* Op::eval() { Sym::eval();
 	if (val=="=") return nest[0]->eq(nest[1]);
 	if (val=="@") return nest[0]->at(nest[1]);
-	return this;
-}
+	return this; }
 
 Lambda::Lambda():Sym("^","^") {}
 
@@ -67,9 +66,8 @@ Sym* Sym::copy() {
 	for (auto pr=pars.begin(),e=pars.end();pr!=e;pr++)
 		R->pars[pr->first] = pr->second;
 	for (auto it=nest.begin(),e=nest.end();it!=e;it++)
-		R->push(*it);
-	return R;
-}
+		R->push((*it)->copy());
+	return R; }
 
 Sym* Sym::replace(string S,Sym*o) {
 	if (val==S) return o;
@@ -77,15 +75,13 @@ Sym* Sym::replace(string S,Sym*o) {
 		if (pr->first==S) pr->second=o;
 	for (auto it=nest.begin(),e=nest.end();it!=e;it++)
 		(*it)=(*it)->replace(S,o);
-	return this;
-}
+	return this; }
 
 Sym* Lambda::at(Sym*o) {
 	Sym* R = copy();
 	for (auto pr=pars.begin(),e=pars.end();pr!=e;pr++)
 		R=R->replace(pr->first,o);
-	return R->nest[0];
-}
+	return R->nest[0]->eval(); }
 
 map<string,Sym*> env;
 void env_init(){}
